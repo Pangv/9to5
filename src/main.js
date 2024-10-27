@@ -41,73 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  handleIgnoreCurrentTimeChange(ignoreCurrentTimeCheckbox, artificialCurrentTimeInput, artificialCurrentTimeLabel);
+  handleIgnoreCurrentTimeChange(
+    ignoreCurrentTimeCheckbox,
+    artificialCurrentTimeInput,
+    artificialCurrentTimeLabel
+  );
 
-  
   updateLanguage();
   toggleButtons();
   formatArtificialCurrentTime(artificialCurrentTimeInput);
   validateArtificialCurrentTimeInput(artificialCurrentTimeInput);
   workingHoursDecimal = calculateWorkingHours(partTimeRatio);
-
-  // Refactored function to calculate remaining time
-  function calculateRemainingTime(
-    now,
-    start,
-    minStart,
-    maxEnd,
-    end,
-    breakTime,
-    language,
-    translations
-  ) {
-    const ignoreCurrentTimeCheckbox =
-      document.getElementById('ignoreCurrentTime');
-    const artificialCurrentTimeInput = document.getElementById(
-      'artificialCurrentTime'
-    );
-
-    if (now < minStart || now > maxEnd) {
-      result.textContent =
-        translations[language]['errorStartTimeBeforCurrentOrAfterMax'];
-      return;
-    }
-
-    let remainingTimeMs = end - now;
-
-    if (remainingTimeMs < 0) {
-      result.textContent =
-        translations[language]['errorStartTimeBeforCurrentOrAfterMax'];
-      return;
-    }
-
-    const remainingHours = Math.floor(toDecimalHours(remainingTimeMs));
-    const remainingMinutes = Math.floor(
-      (remainingTimeMs % (1000 * 60 * 60)) / 1000 / 60
-    );
-    const remainingSeconds = Math.floor((remainingTimeMs % (1000 * 60)) / 1000);
-
-    result.textContent = translations[language]['result'](
-      remainingHours,
-      remainingMinutes,
-      remainingSeconds
-    );
-
-    breakTimeDisplay.textContent =
-      translations[language]['breakTime'](breakTime);
-    endTimeDisplay.textContent = translations[language]['endTime'](
-      end.toLocaleTimeString().slice(0, 8)
-    );
-
-    // If we're using artificial time, update the artificial time field to increment
-    if (ignoreCurrentTimeCheckbox.checked) {
-      let artificialNow = new Date(now.getTime() + 1000);
-      let hours = String(artificialNow.getHours()).padStart(2, '0');
-      let minutes = String(artificialNow.getMinutes()).padStart(2, '0');
-      let seconds = String(artificialNow.getSeconds()).padStart(2, '0');
-      artificialCurrentTimeInput.value = `${hours}:${minutes}:${seconds}`;
-    }
-  }
 
   // Event listener for the calculate button
   calculateButton.addEventListener('click', () => {
@@ -168,11 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateRemainingTime = initializeRemainingTimeUpdater(
       language,
       calculateRemainingTime,
-      start,
       minStart,
       maxEnd,
       end,
-      breakTime
+      breakTime,
+      translations
     );
     // Call the update function immediately, and then set an interval to update every second
     updateRemainingTime();
@@ -186,6 +130,62 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleButtons();
   });
 });
+
+function calculateRemainingTime(
+  now,
+  minStart,
+  maxEnd,
+  end,
+  breakTime,
+  language,
+  translations
+) {
+  const ignoreCurrentTimeCheckbox =
+    document.getElementById('ignoreCurrentTime');
+  const artificialCurrentTimeInput = document.getElementById(
+    'artificialCurrentTime'
+  );
+
+  if (now < minStart || now > maxEnd) {
+    result.textContent =
+      translations[language]['errorStartTimeBeforCurrentOrAfterMax'];
+    return;
+  }
+
+  let remainingTimeMs = end - now;
+
+  if (remainingTimeMs < 0) {
+    result.textContent =
+      translations[language]['errorStartTimeBeforCurrentOrAfterMax'];
+    return;
+  }
+
+  const remainingHours = Math.floor(toDecimalHours(remainingTimeMs));
+  const remainingMinutes = Math.floor(
+    (remainingTimeMs % (1000 * 60 * 60)) / 1000 / 60
+  );
+  const remainingSeconds = Math.floor((remainingTimeMs % (1000 * 60)) / 1000);
+
+  result.textContent = translations[language]['result'](
+    remainingHours,
+    remainingMinutes,
+    remainingSeconds
+  );
+
+  breakTimeDisplay.textContent = translations[language]['breakTime'](breakTime);
+  endTimeDisplay.textContent = translations[language]['endTime'](
+    end.toLocaleTimeString().slice(0, 8)
+  );
+
+  // If we're using artificial time, update the artificial time field to increment
+  if (ignoreCurrentTimeCheckbox.checked) {
+    let artificialNow = new Date(now.getTime() + 1000);
+    let hours = String(artificialNow.getHours()).padStart(2, '0');
+    let minutes = String(artificialNow.getMinutes()).padStart(2, '0');
+    let seconds = String(artificialNow.getSeconds()).padStart(2, '0');
+    artificialCurrentTimeInput.value = `${hours}:${minutes}:${seconds}`;
+  }
+}
 
 function validateArtificialCurrentTimeInput(artificialCurrentTimeInput) {
   artificialCurrentTimeInput.addEventListener('blur', function (e) {
@@ -224,7 +224,11 @@ function formatArtificialCurrentTime(artificialCurrentTimeInput) {
   });
 }
 
-function handleIgnoreCurrentTimeChange(ignoreCurrentTimeCheckbox, artificialCurrentTimeInput, artificialCurrentTimeLabel) {
+function handleIgnoreCurrentTimeChange(
+  ignoreCurrentTimeCheckbox,
+  artificialCurrentTimeInput,
+  artificialCurrentTimeLabel
+) {
   ignoreCurrentTimeCheckbox.addEventListener('change', () => {
     if (ignoreCurrentTimeCheckbox.checked) {
       artificialCurrentTimeInput.style.display = 'inline';
@@ -268,11 +272,11 @@ function calculateEndAndBreakTime(start, workingHoursDecimal, overtime) {
 function initializeRemainingTimeUpdater(
   language,
   calculateRemainingTime,
-  start,
   minStart,
   maxEnd,
   end,
-  breakTime
+  breakTime,
+  translations
 ) {
   return () => {
     let now;
@@ -300,10 +304,8 @@ function initializeRemainingTimeUpdater(
       now = new Date();
     }
 
-    // Call the calculateRemainingTime function
     calculateRemainingTime(
       now,
-      start,
       minStart,
       maxEnd,
       end,
