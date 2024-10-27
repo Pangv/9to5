@@ -1,10 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title data-text="title">Work Time Calculator</title>
+    <script src="src/main.js" type="module" defer></script>
+    <link rel="stylesheet" href="src/main.css" />
+  </head>
+  <body>
+    <header id="options">
+      <button type="button">Options</button>
+      <div>
+        <label for="minStartTime" data-text="labelMinStartTime"
+        >Minimum Start Time:</label
+        >
+        <input type="time" id="minStartTime" value="06:00" />
+        <br />
+        <label
+        for="maxEndTime"
+        id="maximumTimeEndLabel"
+        data-text="labelMaxEndTime"
+        >Maximum End Time:</label
+        >
+        <input type="time" id="maxEndTime" value="20:00" />
+        <br />
+        <br />
+      </div>
+      <label for="range" data-text="labelPartTimeRatio">Part time </label>
+      <input type="range" id="partTimeRatio" step="5" min="0" max="100" value="100" />
+      <span id="ratio">100%</span>
+      <br />
+      <input id="39h" type="radio" value="39" name="weekHoursRadioGroup" checked>
+      <label for="39h">39h Woche</label>
+      <input id="38h" type="radio" value="38" name="weekHoursRadioGroup">
+      <label for="38h">38h Woche</label>
+    </header>
+      <div class="container">
+    <h1 data-text="header">Work Time Calculator</h1>
+      <label for="startTime" data-text="labelStartTime"
+        >Actual Start Time:</label
+      >
+      <input type="time" id="startTime" value="08:00" />
+      <input type="checkbox" id="ignoreCurrentTime" />
+      <label for="ignoreCurrentTime" data-text="labelIgnoreCurrentTime"
+        >Ignore Current Time</label
+      >
+      <br />
+      <label
+        for="artificialCurrentTime"
+        id="artificialCurrentTimeLabel"
+        data-text="labelArtificialCurrentTime"
+        style="display: none"
+        >Artificial Current Time:</label
+      >
+      <input
+        type="text"
+        id="artificialCurrentTime"
+        style="display: none"
+        placeholder="HH:mm:SS"
+      />
+      <br />
+      <label for="overtime" data-text="labelOvertime">Overtime (hours):</label>
+      <input type="time" id="overtime" value="0" />
+      <br />
 
-</body>
+        <button id="calculateButton" data-text="buttonCalculate">
+          Calculate Remaining Time
+      </button>
+      <br />
+      <button id="stopButton" data-text="buttonStop">Stop</button>
+      <p id="error"></p>
+      <p id="result"></p>
+      <p id="breakTime"></p>
+      <p id="endTime"></p>
+    </div>
+  </body>
 </html>

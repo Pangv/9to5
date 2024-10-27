@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+/* import Robot */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* reset */
+* {
+  box-sizing: border-box;
+}
+
+/* css vars */
+:root {
+  --base-font-color: #333;
+  --font-family-heading: 'Playfair Display', serif;
+  --font-family-body: 'Roboto', sans-serif;
+}
+
+/* modern look */
+input[type="text"] {
+  border: 0;
+  border-bottom: 1px solid #ccc;
+  background: transparent;
+  outline: none;
+  height: 40px;
+  color: var(--base-font-color);
+  font-size: 16px;
+}
+
+input[type="text"]::placeholder {
+  color: #ccc;
+}
+
+input[type="text"]:focus {
+  border-bottom: 1px solid #000;
+}
+
+button {
+  border: 0;
+  background: #000;
+  color: #fff;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #333;
+}
+
+/* modern look for time Input */
+
+input[type="time"] {
+  border: 0;
+  border-bottom: 1px solid #ccc;
+  background: transparent;
+  outline: none;
+  height: 40px;
+  color: var(--base-font-color);
+  font-size: 16px;
+}
+
+input[type="time"]::placeholder {
+  color: var(--base-font-color);
+}
+
+input[type="time"]:focus {
+  border-bottom: 1px solid #000;
+}
+
+/* font in a nice fontface, title should be in a display font */
+
+body {
+  font-family: var(--font-family-body);
+  margin: 0;
+}
+
+header {
+  background: #e9e9e9;
+  color: var(--base-font-color);
+  padding: 10px 1em;
+
+  input {
+    color: var(--base-font-color);
+  }
+}
+
+h1 {
+  font-family: var(--font-family-heading);
+  text-align: center;
+}
+
+.options {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+
+/* center the container */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
