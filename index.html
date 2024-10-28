@@ -14,10 +14,13 @@
         >Actual Start Time:</label
       >
       <input type="time" id="startTime" value="08:00" />
-      <input type="checkbox" id="ignoreCurrentTime" />
-      <label for="ignoreCurrentTime" data-text="labelIgnoreCurrentTime"
+      <br>
+      <div>
+        <input type="checkbox" id="ignoreCurrentTime" />
+        <label for="ignoreCurrentTime" data-text="labelIgnoreCurrentTime"
         >Ignore Current Time</label
-      >
+        >
+      </div>
       <br />
       <label
         for="artificialCurrentTime"
@@ -71,27 +74,30 @@
           <br />
           <br />
         </div>
-        <label for="range" data-text="labelPartTimeRatio">Part time </label>
-        <input
+        <div>
+          <label for="range" data-text="labelPartTimeRatio">Part time </label>
+          <input
           type="range"
           id="partTimeRatio"
           step="5"
           min="0"
           max="100"
           value="100"
-        />
-        <span id="ratio">100%</span>
-        <br />
-        <input
+          />
+          <span id="ratio">100%</span>
+        </div>
+        <div>
+          <input
           id="39h"
           type="radio"
           value="39"
           name="weekHoursRadioGroup"
           checked
-        />
-        <label for="39h">39h Woche</label>
-        <input id="38h" type="radio" value="38" name="weekHoursRadioGroup" />
-        <label for="38h">38h Woche</label>
+          />
+          <label for="39h">39h Woche</label>
+          <input id="38h" type="radio" value="38" name="weekHoursRadioGroup" />
+          <label for="38h">38h Woche</label>
+        </div>
       </div>
     </footer>
   </body>

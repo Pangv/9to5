@@ -39,6 +39,7 @@ input[type="text"] {
   height: 40px;
   color: var(--base-font-color);
   font-size: 16px;
+  text-align: center;
 }
 
 input[type="text"]::placeholder {
@@ -81,34 +82,29 @@ input[type="time"]:focus {
   border-bottom: 1px solid #000;
 }
 
-
-
 footer {
   background: #e9e9e9;
   color: var(--base-font-color);
   padding: 10px 1em;
 
+
   & input {
     color: var(--base-font-color);
   }
 
-  &.options {
+  #options {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     margin-top: 20px;
   }
-
+  
 }
+
+
 
 h1 {
   font-family: var(--font-family-heading);
   text-align: center;
-}
-
-.options {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
 }
 
 /* center the container */
