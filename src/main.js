@@ -1,5 +1,6 @@
 import { translations, updateLanguage } from './translations.js';
 
+const HOURS_BEFORE_NORMAL_BREAK = 6;
 const HOURS_BEFORE_EXTRA_BREAK = 9;
 const MAX_WORKING_HOURS_DECIMAL = 10;
 const PAUSE = 30;
@@ -11,9 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const weekHoursRadioGroup = document.getElementsByName('weekHoursRadioGroup');
   const calculateButton = document.getElementById('calculateButton');
   const stopButton = document.getElementById('stopButton');
-  const result = document.getElementById('result');
-  const breakTimeDisplay = document.getElementById('breakTime');
-  const endTimeDisplay = document.getElementById('endTime');
   const ignoreCurrentTimeCheckbox =
     document.getElementById('ignoreCurrentTime');
   const artificialCurrentTimeInput = document.getElementById(
@@ -22,25 +20,50 @@ document.addEventListener('DOMContentLoaded', () => {
   const artificialCurrentTimeLabel = document.getElementById(
     'artificialCurrentTimeLabel'
   );
+  toggleOptionsVisibility();
 
-  const partTimeRatio = document.getElementById('partTimeRatio');
   let workingHoursDecimal;
 
-  // event listener for the radio group to update the sum of hours per week, between 38 or 39
-  weekHoursRadioGroup.forEach((radio) => {
-    radio.addEventListener('change', function (e) {
-      if (e.target.value === '38') {
-        HOURS_PER_WEEK = 38;
-        HOURS_PER_DAY = HOURS_PER_WEEK / 5;
+  function toggleOptionsVisibility() {
+    const optionButton = document.getElementById('optionToggle');
+    optionButton.addEventListener('click', () => {
+      const options = document.getElementById('options');
+      if (options.style.display === 'none') {
+        options.style.display = 'block';
+        options.style.transition = 'display 5s';
       } else {
-        HOURS_PER_WEEK = 39;
-        HOURS_PER_DAY = HOURS_PER_WEEK / 5;
+        options.style.display = 'none';
+        options.style.transition = 'display 1s';
       }
-
-      workingHoursDecimal = calculateWorkingHours(partTimeRatio);
     });
-  });
+  }
 
+  function calculateWorkingHours() {
+    const partTimeRatioElement = document.getElementById('partTimeRatio');
+    const hoursPerDay = HOURS_PER_DAY;
+
+    function updateWorkingHours(e) {
+      const partTimeRatio = e.target.value;
+      workingHoursDecimal = calculateWorkingHoursDecimal(
+        hoursPerDay,
+        partTimeRatio
+      );
+      document.getElementById('ratio').textContent = partTimeRatio + '%';
+    }
+
+    partTimeRatioElement.addEventListener('change', updateWorkingHours);
+
+    // Initial calculation based on the current value of the part-time ratio element
+    const initialPartTimeRatio = partTimeRatioElement.value;
+    workingHoursDecimal = calculateWorkingHoursDecimal(
+      hoursPerDay,
+      initialPartTimeRatio
+    );
+    return workingHoursDecimal;
+  }
+
+  setWeeklyWorkingHoursBasedOnYear();
+  handleWeekHoursChange();
   handleIgnoreCurrentTimeChange(
     ignoreCurrentTimeCheckbox,
     artificialCurrentTimeInput,
@@ -59,10 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
       clearInterval(window.intervalId);
     }
 
+    workingHoursDecimal = calculateWorkingHours(partTimeRatio);
+
     // Get new values each time the calculate button is clicked
     const startTime = document.getElementById('startTime').value;
     let overtimeInputValue =
       document.getElementById('overtime').value || '00:00';
+    const killTime = document.getElementById('killTime').checked;
     const minStartTime = document.getElementById('minStartTime').value;
     const maxEndTime = document.getElementById('maxEndTime').value;
     const language = navigator.language.split('-')[0]; // Assuming this is part of your translations
@@ -71,11 +97,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const overtimeInputValueTemp = overtimeInputValue.split(':');
     let overtimeHours = Number(overtimeInputValueTemp[0]);
     let overtimeMinutes = Number(overtimeInputValueTemp[1]);
-    if (overtimeHours > 2 || (overtimeHours === 2 && overtimeMinutes > 12)) {
-      document.getElementById('error').textContent =
-        translations[language]['errorOvertimeExceedsMax'];
-      document.getElementById('error').style.color = 'red';
-      return;
+    if (!killTime) {
+      if (overtimeHours > 2 || (overtimeHours === 2 && overtimeMinutes > 12)) {
+        document.getElementById('error').textContent =
+          translations[language]['errorOvertimeExceedsMax'];
+        document.getElementById('error').style.color = 'red';
+        return;
+      }
     }
 
     // Parse times into Date objects
@@ -91,7 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let { end, breakTime } = calculateEndAndBreakTime(
       start,
       workingHoursDecimal,
-      overtime
+      overtime,
+      killTime
     );
 
     const totalTimeIncludingBreaks = toDecimalHours(end - start);
@@ -129,6 +158,35 @@ document.addEventListener('DOMContentLoaded', () => {
     window.intervalId = null;
     toggleButtons();
   });
+
+  function handleWeekHoursChange() {
+    weekHoursRadioGroup.forEach((radio) => {
+      radio.addEventListener('change', function (e) {
+        if (e.target.value === '38') {
+          HOURS_PER_WEEK = 38;
+          HOURS_PER_DAY = HOURS_PER_WEEK / 5;
+        } else {
+          HOURS_PER_WEEK = 39;
+          HOURS_PER_DAY = HOURS_PER_WEEK / 5;
+        }
+
+        workingHoursDecimal = calculateWorkingHours(partTimeRatio);
+      });
+    });
+  }
+
+  function setWeeklyWorkingHoursBasedOnYear() {
+    const currentYear = new Date().getFullYear();
+    if (currentYear === 2024) {
+      weekHoursRadioGroup[1].checked = true;
+      HOURS_PER_WEEK = 39;
+      HOURS_PER_DAY = HOURS_PER_WEEK / 5;
+    } else {
+      weekHoursRadioGroup[0].checked = true;
+      HOURS_PER_WEEK = 38;
+      HOURS_PER_DAY = HOURS_PER_WEEK / 5;
+    }
+  }
 });
 
 function calculateRemainingTime(
@@ -140,6 +198,9 @@ function calculateRemainingTime(
   language,
   translations
 ) {
+  const result = document.getElementById('result');
+  const breakTimeDisplay = document.getElementById('breakTime');
+  const endTimeDisplay = document.getElementById('endTime');
   const ignoreCurrentTimeCheckbox =
     document.getElementById('ignoreCurrentTime');
   const artificialCurrentTimeInput = document.getElementById(
@@ -156,7 +217,11 @@ function calculateRemainingTime(
 
   if (remainingTimeMs < 0) {
     result.textContent =
-      translations[language]['errorStartTimeBeforCurrentOrAfterMax'];
+      translations[language]['errorStartTimeBeforCurrentOrAfterMax'] +
+      ' Arbeitsende war ' +
+      end.toLocaleTimeString().slice(0, 8);
+    breakTimeDisplay.textContent = '';
+    endTimeDisplay.textContent = '';
     return;
   }
 
@@ -240,31 +305,31 @@ function handleIgnoreCurrentTimeChange(
   });
 }
 
-function calculateWorkingHours(partTimeRatio) {
-  let workingHoursDecimal = HOURS_PER_DAY;
-  partTimeRatio.addEventListener('change', function (e) {
-    workingHoursDecimal = HOURS_PER_DAY;
-    // Update the working hours decimal based on the part-time ratio
-    workingHoursDecimal = workingHoursDecimal * (e.target.value / 100);
-    document.getElementById('ratio').textContent = e.target.value + '%';
-  });
-  return workingHoursDecimal;
+function calculateWorkingHoursDecimal(hoursPerDay, partTimeRatio) {
+  return hoursPerDay * (partTimeRatio / 100);
 }
 
-function calculateEndAndBreakTime(start, workingHoursDecimal, overtime) {
-  let end = new Date(start);
-  end.setHours(
-    end.getHours() + (workingHoursDecimal % 10) + overtime.getHours()
-  );
-  end.setMinutes(
-    end.getMinutes() + (workingHoursDecimal % 1) * 60 + overtime.getMinutes()
-  );
+function calculateEndAndBreakTime(
+  start,
+  workingHoursDecimal,
+  overtime,
+  killTime
+) {
+  const end = new Date(start);
+  const totalMinutes =
+    workingHoursDecimal * 60 +
+    (killTime ? -1 : 1) * (overtime.getHours() * 60 + overtime.getMinutes());
+  end.setMinutes(end.getMinutes() + totalMinutes);
 
-  let breakTime = PAUSE;
-  const totalWorkTime = Number(toDecimalHours(end - start).toFixed(1));
+  let breakTime = 0;
+  const totalWorkTime = toDecimalHours(end - start);
+
   if (totalWorkTime > HOURS_BEFORE_EXTRA_BREAK) {
-    breakTime += EXTRA_PAUSE;
+    breakTime = PAUSE + EXTRA_PAUSE;
+  } else if (totalWorkTime >= HOURS_BEFORE_NORMAL_BREAK) {
+    breakTime = PAUSE;
   }
+
   end.setMinutes(end.getMinutes() + breakTime);
   return { end, breakTime };
 }

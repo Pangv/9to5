@@ -1,6 +1,6 @@
 export const translations = {
   en: {
-    title: 'Work Time Calculator',
+    title: '9 to 5',
     header: 'Work Time Calculator',
     labelStartTime: 'Start Time:',
     labelIgnoreCurrentTime: 'Ignore Current Time',
@@ -9,6 +9,8 @@ export const translations = {
     labelMinStartTime: 'Minimum Start Time:',
     labelMaxEndTime: 'Maximum End Time:',
     labelPartTimeRatio: 'Part Time Ratio:',
+    labelKillTime: 'reduce',
+    labelOptionToggle: 'Toggle Options',
     buttonCalculate: 'Calculate Remaining Time',
     buttonStop: 'Stop',
     result: (remainingHours, remainingMinutes, remainingSeconds) =>
@@ -33,8 +35,8 @@ export const translations = {
     errorOvertimeExceedsMax: 'Error: Overtime should not exceed 02:12.',
   },
   de: {
-    title: 'Arbeitszeitrechner',
-    header: 'Arbeitszeitrechner',
+    title: '9 to 5',
+    header: '9 to 5 - Arbeitszeitrechner',
     labelStartTime: 'Startzeit:',
     labelIgnoreCurrentTime: 'Aktuelle Zeit ignorieren',
     labelArtificialCurrentTime: 'Künstliche aktuelle Zeit:',
@@ -42,6 +44,8 @@ export const translations = {
     labelMinStartTime: 'Minimale Startzeit:',
     labelMaxEndTime: 'Maximale Endzeit:',
     labelPartTimeRatio: 'Teilzeitverhältnis:',
+    labelKillTime: 'abbauen',
+    labelOptionToggle: 'Optionen umschalten',
     buttonCalculate: 'Verbleibende Zeit berechnen',
     buttonStop: 'Stoppen',
     result: (remainingHours, remainingMinutes, remainingSeconds) =>
