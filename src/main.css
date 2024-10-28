@@ -30,7 +30,7 @@ main {
   flex: 1;
 }
 
-/* modern look */
+/* Modern look for input */
 input[type="text"] {
   border: 0;
   border-bottom: 1px solid #ccc;
@@ -40,14 +40,14 @@ input[type="text"] {
   color: var(--base-font-color);
   font-size: 16px;
   text-align: center;
-}
 
-input[type="text"]::placeholder {
-  color: #ccc;
-}
+  &::placeholder {
+    color: #ccc;
+  }
 
-input[type="text"]:focus {
-  border-bottom: 1px solid #000;
+  &:focus {
+    border-bottom: 1px solid #000;
+  }
 }
 
 button {
@@ -56,10 +56,10 @@ button {
   color: #fff;
   padding: 10px 20px;
   cursor: pointer;
-}
 
-button:hover {
-  background: #333;
+  &:hover {
+    background: #333;
+  }
 }
 
 /* modern look for time Input */
@@ -87,20 +87,21 @@ footer {
   color: var(--base-font-color);
   padding: 10px 1em;
 
-
   & input {
     color: var(--base-font-color);
   }
 
   #options {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin-top: 20px;
+
+    & div {
+      margin-bottom: 10px;
+    }
   }
-  
 }
-
-
 
 h1 {
   font-family: var(--font-family-heading);

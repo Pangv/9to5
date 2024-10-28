@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const setWeeklyWorkingHoursBasedOnYear = () => {
     const currentYear = new Date().getFullYear();
     const is2024 = currentYear === 2024;
-    elements.weekHoursRadioGroup[is2024 ? 1 : 0].checked = true;
+    elements.weekHoursRadioGroup[is2024 ? 0 : 1].checked = true;
     HOURS_PER_WEEK = is2024 ? 39 : 38;
     HOURS_PER_DAY = HOURS_PER_WEEK / 5;
   };
@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleButtons();
     formatArtificialCurrentTime(elements.artificialCurrentTimeInput);
     validateArtificialCurrentTimeInput(elements.artificialCurrentTimeInput);
+    elements.optionToggle.click();
   };
 
   const calculate = () => {
@@ -178,10 +179,9 @@ function calculateRemainingTime(
   let remainingTimeMs = end - now;
 
   if (remainingTimeMs < 0) {
-    result.textContent =
-      translations[language]['errorStartTimeBeforCurrentOrAfterMax'] +
-      ' Arbeitsende war ' +
-      end.toLocaleTimeString().slice(0, 8);
+    result.textContent = `${
+      translations[language]['errorStartTimeBeforCurrentOrAfterMax']
+    } Arbeitsende war ${end.toLocaleTimeString().slice(0, 8)}`;
     breakTimeDisplay.textContent = '';
     endTimeDisplay.textContent = '';
     return;
@@ -198,27 +198,25 @@ function calculateRemainingTime(
     remainingMinutes,
     remainingSeconds
   );
-
   breakTimeDisplay.textContent = translations[language]['breakTime'](breakTime);
   endTimeDisplay.textContent = translations[language]['endTime'](
     end.toLocaleTimeString().slice(0, 8)
   );
 
-  // If we're using artificial time, update the artificial time field to increment
   if (ignoreCurrentTimeCheckbox.checked) {
     let artificialNow = new Date(now.getTime() + 1000);
-    let hours = String(artificialNow.getHours()).padStart(2, '0');
-    let minutes = String(artificialNow.getMinutes()).padStart(2, '0');
-    let seconds = String(artificialNow.getSeconds()).padStart(2, '0');
-    artificialCurrentTimeInput.value = `${hours}:${minutes}:${seconds}`;
+    artificialCurrentTimeInput.value = `${String(
+      artificialNow.getHours()
+    ).padStart(2, '0')}:${String(artificialNow.getMinutes()).padStart(
+      2,
+      '0'
+    )}:${String(artificialNow.getSeconds()).padStart(2, '0')}`;
   }
 }
 
 function validateArtificialCurrentTimeInput(artificialCurrentTimeInput) {
   artificialCurrentTimeInput.addEventListener('blur', function (e) {
     const value = e.target.value;
-
-    // Ensure input is exactly in HH:MM:SS format when the user leaves the input
     if (/^\d{2}:\d{2}$/.test(value)) {
       e.target.value = value + ':00';
     }
@@ -230,21 +228,17 @@ function formatArtificialCurrentTime(artificialCurrentTimeInput) {
     let value = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
 
     if (value.length >= 4) {
-      // Insert colon at the correct positions for HH:MM
-      value = value.slice(0, 2) + ':' + value.slice(2, 4);
+      value = value.slice(0, 2) + ':' + value.slice(2, 4); // Insert colon for HH:MM
     }
 
     if (value.length === 5 || value.length === 6) {
-      // Append seconds as '00' if not present
-      value += ':00';
+      value += ':00'; // Append seconds as '00' if not present
     } else if (value.length >= 7) {
-      // Insert seconds if provided
-      value = value.slice(0, 5) + ':' + value.slice(5, 7);
+      value = value.slice(0, 5) + ':' + value.slice(5, 7); // Insert seconds if provided
     }
 
-    // Limit input to HH:MM:SS format
     if (value.length > 8) {
-      value = value.slice(0, 8);
+      value = value.slice(0, 8); // Limit input to HH:MM:SS format
     }
 
     e.target.value = value;
