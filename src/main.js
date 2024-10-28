@@ -5,8 +5,8 @@ const HOURS_BEFORE_EXTRA_BREAK = 9;
 const MAX_WORKING_HOURS_DECIMAL = 10;
 const PAUSE = 30;
 const EXTRA_PAUSE = 15;
-let HOURS_PER_WEEK = 39; // change me later
-let HOURS_PER_DAY = HOURS_PER_WEEK / 5; // change me later
+let HOURS_PER_WEEK = 39; 
+let HOURS_PER_DAY = HOURS_PER_WEEK / 5; 
 
 document.addEventListener('DOMContentLoaded', () => {
   const elements = {
