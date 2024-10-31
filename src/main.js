@@ -1,12 +1,21 @@
 import { translations, updateLanguage } from './translations.js';
+import {
+  formatArtificialCurrentTime,
+  validateArtificialCurrentTimeInput,
+  toDecimalHours,
+} from './utils.js';
+import {
+  HOURS_BEFORE_NORMAL_BREAK,
+  HOURS_BEFORE_EXTRA_BREAK,
+  HOURS_PER_DAY,
+  HOURS_PER_WEEK,
+  MAX_WORKING_HOURS_DECIMAL,
+  PAUSE,
+  EXTRA_PAUSE,
+} from './constants.js';
 
-const HOURS_BEFORE_NORMAL_BREAK = 6;
-const HOURS_BEFORE_EXTRA_BREAK = 9;
-const MAX_WORKING_HOURS_DECIMAL = 10;
-const PAUSE = 30;
-const EXTRA_PAUSE = 15;
-let HOURS_PER_WEEK = 39; 
-let HOURS_PER_DAY = HOURS_PER_WEEK / 5; 
+let hoursPerWeek = HOURS_PER_WEEK;
+let hoursPerDay = HOURS_PER_DAY;
 
 document.addEventListener('DOMContentLoaded', () => {
   const elements = {
@@ -59,8 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const handleWeekHoursChange = () => {
     elements.weekHoursRadioGroup.forEach((radio) => {
       radio.addEventListener('change', (e) => {
-        HOURS_PER_WEEK = e.target.value === '38' ? 38 : 39;
-        HOURS_PER_DAY = HOURS_PER_WEEK / 5;
+        hoursPerWeek = e.target.value === '38' ? 38 : 39;
+        HOURS_PER_DAY = hoursPerWeek / 5;
       });
     });
   };
@@ -69,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentYear = new Date().getFullYear();
     const is2024 = currentYear === 2024;
     elements.weekHoursRadioGroup[is2024 ? 0 : 1].checked = true;
-    HOURS_PER_WEEK = is2024 ? 39 : 38;
-    HOURS_PER_DAY = HOURS_PER_WEEK / 5;
+    hoursPerWeek = is2024 ? 39 : 38;
+    hoursPerDay = hoursPerWeek / 5;
   };
 
   const initialize = () => {
@@ -214,37 +223,6 @@ function calculateRemainingTime(
   }
 }
 
-function validateArtificialCurrentTimeInput(artificialCurrentTimeInput) {
-  artificialCurrentTimeInput.addEventListener('blur', function (e) {
-    const value = e.target.value;
-    if (/^\d{2}:\d{2}$/.test(value)) {
-      e.target.value = value + ':00';
-    }
-  });
-}
-
-function formatArtificialCurrentTime(artificialCurrentTimeInput) {
-  artificialCurrentTimeInput.addEventListener('input', function (e) {
-    let value = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-
-    if (value.length >= 4) {
-      value = value.slice(0, 2) + ':' + value.slice(2, 4); // Insert colon for HH:MM
-    }
-
-    if (value.length === 5 || value.length === 6) {
-      value += ':00'; // Append seconds as '00' if not present
-    } else if (value.length >= 7) {
-      value = value.slice(0, 5) + ':' + value.slice(5, 7); // Insert seconds if provided
-    }
-
-    if (value.length > 8) {
-      value = value.slice(0, 8); // Limit input to HH:MM:SS format
-    }
-
-    e.target.value = value;
-  });
-}
-
 function handleIgnoreCurrentTimeChange(
   ignoreCurrentTimeCheckbox,
   artificialCurrentTimeInput,
@@ -337,9 +315,6 @@ function initializeRemainingTimeUpdater(
   };
 }
 
-function toDecimalHours(time) {
-  return time / 1000 / 60 / 60;
-}
 
 function toggleButtons() {
   if (window.intervalId) {
